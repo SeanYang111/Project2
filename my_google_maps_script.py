@@ -1,58 +1,107 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 30 13:29:42 2023
-
-@author: Sean
-"""
-
 import googlemaps
-import requests
+import re
 
-# Replace with your Google Maps API key
-api_key = 'AIzaSyBToJhU5VDk0V8UA9Gf_tQB_2acbud3W2k'
+api_key = YOUR_API_KEY
 
-gmaps = googlemaps.Client(key=api_key)
+origin = '1175 Boylston St, Boston, MA 02215, United States'
+destination = '820 Commonwealth Ave, Brookline, MA 02446, United States'
 
-def get_elevation(lat, lng):
-    # Make a request to the Elevation API
-    url = f'https://maps.googleapis.com/maps/api/elevation/json?locations={lat},{lng}&key={api_key}'
-    response = requests.get(url)
-    data = response.json()
-    if 'results' in data:
-        return data['results'][0]['elevation']
-    return None
+mode = input("Choose a mode (walking or driving): ").lower()
 
-def is_slope_above_20_degrees(start, end):
-    elevation_start = get_elevation(start[0], start[1])
-    elevation_end = get_elevation(end[0], end[1])
+if mode not in ['walking', 'driving', 'restroom']:
+    print("Invalid mode. Please choose 'walking', 'driving', or 'restroom'.")
+else:
 
-    if elevation_start is not None and elevation_end is not None:
-        delta_elevation = elevation_end - elevation_start
-        distance = ((end[0] - start[0])**2 + (end[1] - start[1])**2)**0.5
-        slope = (delta_elevation / distance) * 180 / 3.14159265  # Convert to degrees
+    gmaps = googlemaps.Client(key=api_key)
 
-        return slope > 20
-    return False
+    def clean_html_tags(text):
+        clean = re.compile('<.*?>')
+        return re.sub(clean, '', text)
 
-def find_walking_route(origin, destination):
-    # Request walking directions
-    directions = gmaps.directions(origin, destination, mode='walking')
+    if mode == 'walking':
+        # Find the directions from the origin to the destination
+        directions = gmaps.directions(origin, destination, mode="walking")
 
-    # Filter out uphill segments
-    filtered_directions = [directions[0]['legs'][0]['steps'][0]]
-    for step in directions[0]['legs'][0]['steps'][1:]:
-        start = (filtered_directions[-1]['end_location']['lat'], filtered_directions[-1]['end_location']['lng'])
-        end = (step['end_location']['lat'], step['end_location']['lng'])
+        if not directions:
+            print("No directions found.")
+        else:
+            restroom_directions = None
+            restroom_location = None
 
-        if not is_slope_above_20_degrees(start, end):
-            filtered_directions.append(step)
+            for i, step in enumerate(directions[0]['legs'][0]['steps']):
+                instructions = step['html_instructions']  
+                distance = step['distance']['text']  
 
-    return filtered_directions
+                # Remove HTML tags from instructions
+                instructions = clean_html_tags(instructions)
 
-if __name__ == '__main__':
-    origin = '1175 Boylston St, Boston, MA 02215 United State'
-    destination = '820 Commonwealth Ave, Brookline, MA 02446 United State'
+                if restroom_location:
+                    print(f"Step {i + 1}: {instructions} ({distance})")
+                else:
+                    print(f"Step {i + 1}: {instructions} ({distance})")
 
-    route = find_walking_route(origin, destination)
-    for step in route:
-        print(step['html_instructions'])
+                # Check if there's a public restroom nearby
+                keyword = "public restroom"
+                lat = step['end_location']['lat']
+                lng = step['end_location']['lng']
+
+                places_result = gmaps.places_nearby(location=(lat, lng), radius=1000, keyword=keyword)
+
+                if places_result['results']:
+                    restroom_name = places_result['results'][0]['name']
+                    restroom_location = places_result['results'][0]['vicinity']
+                    print(f"   - There's a public restroom nearby: {restroom_name}")
+
+                    restroom_choice = input("Do you want to go to the restroom (yes/no)? ").lower()
+
+                    if restroom_choice == 'yes':
+                        print("Redirecting to the restroom...")
+                        restroom_directions = gmaps.directions(origin, restroom_location, mode="walking")
+                        for j, restroom_step in enumerate(restroom_directions[0]['legs'][0]['steps']):
+                            if j == 0:
+                                continue  
+                            restroom_instructions = restroom_step['html_instructions']
+                            distance = restroom_step['distance']['text']
+                            restroom_instructions = clean_html_tags(restroom_instructions)
+                            print(f"   - Restroom Step {j}: {restroom_instructions} ({distance})")
+
+                        i += len(restroom_directions[0]['legs'][0]['steps'])
+
+            if restroom_directions:
+                print("Restroom reached.")
+
+                for k, step in enumerate(directions[0]['legs'][0]['steps'][i:]):
+                    instructions = step['html_instructions']
+                    distance = step['distance']['text']
+                    instructions = clean_html_tags(instructions)
+    
+                    if "There's a public restroom nearby:" not in instructions:
+                        print(f"Step {i + k + 1}: {instructions} ({distance})")
+
+            print("Destination reached.")
+
+    if mode == 'driving':
+        directions = gmaps.directions(origin, destination, mode="driving")
+
+        if not directions:
+            print("No directions found.")
+        else:
+            for i, step in enumerate(directions[0]['legs'][0]['steps']):
+                instructions = step['html_instructions'] 
+                distance = step['distance']['text']  
+
+                # Remove HTML tags from instructions
+                instructions = clean_html_tags(instructions)
+
+                print(f"Step {i + 1}: {instructions} ({distance})")
+
+                if i == len(directions[0]['legs'][0]['steps']) - 1:
+                    # If it's the last step, search for parking spaces near the destination
+                    destination_location = directions[0]['legs'][0]['end_location']
+                    parking_spaces = gmaps.places_nearby(location=destination_location, radius=500, keyword="parking")
+
+                    if parking_spaces['results']:
+                        nearest_parking = parking_spaces['results'][0]
+                        print(f"Nearest parking space: {nearest_parking['name']} ({nearest_parking['vicinity']})")
+
+            print("Destination reached.")
