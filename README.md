@@ -57,6 +57,10 @@ Step 8: Turn left onto Commonwealth AveDestination will be on the right (0.1 mi)
 Destination reached.
 ```
 
+
+https://github.com/SeanYang111/Project2/assets/90599095/bc64a823-289e-4cae-9ff1-e4e5d2c97e00
+
+
 2. Driving Mode:
 ```
 Choose a mode (walking or driving): driving
@@ -73,3 +77,7 @@ Step 10: Turn right onto Commonwealth AveDestination will be on the right (430 f
 Nearest parking space: Parqay Parking (73 Thatcher St, Brookline)
 Destination reached.
 ```
+
+
+https://github.com/SeanYang111/Project2/assets/90599095/a2e38037-0fe6-480c-a625-f98741ac16cd
+
