@@ -1,19 +1,23 @@
+#api_key = 'AIzaSyBToJhU5VDk0V8UA9Gf_tQB_2acbud3W2k'
 import googlemaps
 import re
 
-api_key = YOUR_API_KEY
+api_key ='AIzaSyBToJhU5VDk0V8UA9Gf_tQB_2acbud3W2k'
 
+# Start and end locations
 origin = '1175 Boylston St, Boston, MA 02215, United States'
 destination = '820 Commonwealth Ave, Brookline, MA 02446, United States'
 
+# User's choice of mode (walking, driving, or restroom)
 mode = input("Choose a mode (walking or driving): ").lower()
 
 if mode not in ['walking', 'driving', 'restroom']:
     print("Invalid mode. Please choose 'walking', 'driving', or 'restroom'.")
 else:
-
+    # Initialize Google Maps client
     gmaps = googlemaps.Client(key=api_key)
 
+    # Define a function to remove HTML tags
     def clean_html_tags(text):
         clean = re.compile('<.*?>')
         return re.sub(clean, '', text)
@@ -29,8 +33,8 @@ else:
             restroom_location = None
 
             for i, step in enumerate(directions[0]['legs'][0]['steps']):
-                instructions = step['html_instructions']  
-                distance = step['distance']['text']  
+                instructions = step['html_instructions']  # Step-by-step instructions
+                distance = step['distance']['text']  # Distance for the step
 
                 # Remove HTML tags from instructions
                 instructions = clean_html_tags(instructions)
@@ -59,7 +63,7 @@ else:
                         restroom_directions = gmaps.directions(origin, restroom_location, mode="walking")
                         for j, restroom_step in enumerate(restroom_directions[0]['legs'][0]['steps']):
                             if j == 0:
-                                continue  
+                                continue  # Skip the first step (e.g., "Head northeast (213 ft)")
                             restroom_instructions = restroom_step['html_instructions']
                             distance = restroom_step['distance']['text']
                             restroom_instructions = clean_html_tags(restroom_instructions)
@@ -74,21 +78,23 @@ else:
                     instructions = step['html_instructions']
                     distance = step['distance']['text']
                     instructions = clean_html_tags(instructions)
-    
+
+                    # Skip the message about a nearby restroom for the rest of the route
                     if "There's a public restroom nearby:" not in instructions:
                         print(f"Step {i + k + 1}: {instructions} ({distance})")
 
             print("Destination reached.")
 
     if mode == 'driving':
+        # Find the directions from the origin to the destination
         directions = gmaps.directions(origin, destination, mode="driving")
 
         if not directions:
             print("No directions found.")
         else:
             for i, step in enumerate(directions[0]['legs'][0]['steps']):
-                instructions = step['html_instructions'] 
-                distance = step['distance']['text']  
+                instructions = step['html_instructions']  # Step-by-step instructions
+                distance = step['distance']['text']  # Distance for the step
 
                 # Remove HTML tags from instructions
                 instructions = clean_html_tags(instructions)
