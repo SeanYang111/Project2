@@ -25,3 +25,51 @@ Users can choose to redirect to a nearby restroom with step-by-step directions.
   (2) The app generates a basic driving route with turn-by-turn directions and parking space alerts.
 5. Parking Space Locator (Driving):
   In driving mode, users can find the nearest parking spaces to the destination.
+
+## Results:  
+
+1. Walking Mode:  
+```
+Choose a mode (walking or driving): walking
+Step 1: Head southwest toward Boylston St (479 ft)
+   - There's a public restroom nearby: Public Restrooms Storrow Lagoon
+Do you want to go to the restroom (yes/no)? yes
+Redirecting to the restroom...
+   - Restroom Step 1: Turn left onto Boylston St (95 ft)
+   - Restroom Step 2: Sharp right onto Park Dr (79 ft)
+   - Restroom Step 3: Turn left onto Path Q (26 ft)
+   - Restroom Step 4: Turn left onto Emerald Necklace (0.2 mi)
+   - Restroom Step 5: Take the crosswalk (0.1 mi)
+   - Restroom Step 6: Turn right onto Boylston St (469 ft)
+   - Restroom Step 7: Turn left onto Massachusetts AvePass by Quality Mart (on the left in 0.3 mi) (0.3 mi)
+   - Restroom Step 8: Turn right onto Dr Paul Dudley White Bike Path (0.1 mi)
+   - Restroom Step 9: Slight right to stay on Dr Paul Dudley White Bike Path (0.2 mi)
+   - Restroom Step 10: Turn right onto Charles River Esplanades/Dr Paul Dudley White Bike Path (75 ft)
+   - Restroom Step 11: Turn left onto Charles River Esplanades (85 ft)
+   - Restroom Step 12: Turn left to stay on Charles River Esplanades (240 ft)
+Step 2: Turn right onto Boylston St (0.2 mi)
+Step 3: Turn right onto Jersey St (0.2 mi)
+Step 4: Continue onto David Ortiz Dr (0.1 mi)
+Step 5: Turn right onto Maitland St (305 ft)
+Step 6: Continue onto Mountfort St (0.4 mi)
+Step 7: Turn right onto Carlton St (0.1 mi)
+Step 8: Turn left onto Commonwealth AveDestination will be on the right (0.1 mi)
+Destination reached.
+```
+
+2. Driving Mode:
+```
+Choose a mode (walking or driving): driving
+Step 1: Head southwest on Private Alley 938 toward Ipswich StRestricted usage road (0.1 mi)
+Step 2: Turn right onto Ipswich St (138 ft)
+Step 3: Turn left onto Van Ness St (0.1 mi)
+Step 4: Turn right onto Jersey St (0.1 mi)
+Step 5: Continue onto David Ortiz Dr (0.1 mi)
+Step 6: David Ortiz Dr turns right and becomes Maitland St (272 ft)
+Step 7: Turn left onto Beacon St (0.2 mi)
+Step 8: Continue straight to stay on Beacon St (0.5 mi)
+Step 9: Turn right onto Amory St (0.5 mi)
+Step 10: Turn right onto Commonwealth AveDestination will be on the right (430 ft)
+Nearest parking space: Parqay Parking (73 Thatcher St, Brookline)
+Destination reached.
+```
